@@ -1,9 +1,9 @@
-import { Group, HemisphereLight, Mesh, MeshLambertMaterial, PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import { Group, HemisphereLight, Mesh, MeshLambertMaterial, PerspectiveCamera, Scene, WebGLRenderer, DoubleSide } from "three";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
-import { body, leftMargin, leftMarginSig, rightMargin } from "./shared";
-import { bottom, g, px } from "../layout";
-import { railFromPoints } from "../rail";
-import { bound, boundPrim, effect } from "../signal";
+import { body, globalSVG, leftMargin, leftMarginSig, rightMargin } from "./shared";
+import { bottom, g, px, setLinePoints } from "../layout";
+import { makeRail, railFromPoints, styleThinLine } from "../rail";
+import { bound, boundPrim, effect, elementSignal } from "../signal";
 import { railPoint5, railPoint5Sig } from "./projects";
 
 const [whoMeRailTop, whoMeRailTopSig] = boundPrim(() => railPoint5.y + 80, [railPoint5Sig]);
@@ -17,13 +17,14 @@ railFromPoints(whoMeRailPoint2, whoMeRailPoint3, [whoMeRailPoint2Sig, whoMeRailP
 
 const whoAmI = g("who-am-i");
 const whoAmIDescription = g("who-am-i-description");
+const whoAmIDescriptionSig = elementSignal(whoAmIDescription);
 
 const titleSpacing = 20;
 
 // 3D stuff
 
-const face3DWidth = 400;
-const face3DHeight = 400;
+const face3DWidth = 500;
+const face3DHeight = 500;
 const scene = new Scene();
 const camera = new PerspectiveCamera(75, face3DWidth / face3DHeight, 0.1, 1000);
 
@@ -38,9 +39,9 @@ const material = new MeshLambertMaterial({ color: 0xffffff /*, side: DoubleSide*
 
 const light = new HemisphereLight(0xffffff, 0x888888);
 // const light2 = new PointLight(0xffffff);
-// light2.position.x = 20;
-// light2.position.y = 20;
-// light2.position.z = 20;
+// light.position.x = 20;
+// light.position.y = -20;
+// light.position.z = 20;
 scene.add(light);
 // scene.add(light2);
 
@@ -71,6 +72,20 @@ loader.load("./face_scan.obj", (faceModel: Group) => {
     // animate(0);
 });
 
+// me head
+
+const meHeadSplashes = document.getElementsByClassName("me-head-splash");
+for (let i = 0; i < meHeadSplashes.length; i++) {
+    effect(() => {
+        const meHeadSplash = meHeadSplashes[i] as HTMLElement;
+        const b = bottom(whoAmIDescription) + 130 + i * 50;
+        meHeadSplash.style.right = px(700);
+        meHeadSplash.style.top = px(b);
+    }, [whoAmIDescriptionSig, leftMarginSig]);
+}
+
+// me stuff
+
 effect(() => {
     whoAmI.style.top = px(whoMeRailTop.v + titleSpacing);
     whoAmI.style.left = px(leftMargin.v + titleSpacing);
@@ -82,3 +97,34 @@ effect(() => {
     face3D.style.left = px(rightMargin.v - face3D.width);
     face3D.style.top = px(bottom(whoAmIDescription) + 40);
 }, [whoMeRailTopSig, leftMarginSig]);
+
+const littleTick = 40;
+const sections = [
+    { me: "objective", right: littleTick },
+    { me: "education", right: 400 },
+    { me: "skills", right: littleTick },
+    { me: "awards", right: 300 },
+    { me: "interests", right: littleTick },
+];
+
+for (const [i, section] of sections.entries()) {
+    const meHeader = g(section.me + "-header");
+    const meDescription = g(section.me + "-description");
+
+    const meRail = makeRail();
+    styleThinLine(meRail);
+    globalSVG.appendChild(meRail);
+
+    effect(() => {
+        const b = bottom(face3D) + 10 + i * 250;
+        const x = (section.right * window.innerWidth) / 1500;
+        const shift = leftMargin.v + x;
+        const gap = 10;
+
+        setLinePoints(meRail, leftMargin.v, b, shift, b);
+        meHeader.style.left = px(shift + gap);
+        meHeader.style.top = px(b - meHeader.clientHeight / 2);
+        meDescription.style.left = px(shift + gap);
+        meDescription.style.top = px(b + 20);
+    }, [leftMarginSig, whoMeRailTopSig]);
+}

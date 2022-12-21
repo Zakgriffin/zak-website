@@ -19,12 +19,12 @@ export const [rightMargin, rightMarginSig] = boundPrim(() => window.innerWidth -
 
 // temp scrolling fix
 
-const scrollBoi = document.createElement("div");
+// const scrollBoi = document.createElement("div");
 
-scrollBoi.style.left = px(80);
-scrollBoi.style.top = px(4000);
-scrollBoi.style.position = "absolute";
-scrollBoi.style.width = px(100);
-scrollBoi.style.height = px(100);
-scrollBoi.style.backgroundColor = "red";
-body.appendChild(scrollBoi);
+// scrollBoi.style.left = px(80);
+// scrollBoi.style.top = px(4000);
+// scrollBoi.style.position = "absolute";
+// scrollBoi.style.width = px(100);
+// scrollBoi.style.height = px(100);
+// scrollBoi.style.backgroundColor = "red";
+// body.appendChild(scrollBoi);

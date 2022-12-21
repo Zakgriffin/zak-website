@@ -20,7 +20,7 @@ module.exports = {
     devtool: "inline-source-map",
     devServer: {
         port: 1234,
-        hot: false,
+        hot: true,
         liveReload: true,
     },
 };

@@ -3,6 +3,7 @@ import { setLinePoints, spacedEvenly } from "../layout";
 import { railFromPoints, styleThinLine } from "../rail";
 import { bound, effect, Signal } from "../signal";
 import { cubeRadius, cubeTransform, cubeTranslateSig } from "./home";
+import { animateSpring, Spring } from "../spring";
 const numberOfProjects = 6;
 
 const { tx, ty } = cubeTransform;
@@ -19,35 +20,41 @@ railFromPoints(railPoint2, railPoint3, [railPoint2Sig, railPoint3Sig]);
 railFromPoints(railPoint3, railPoint4, [railPoint3Sig, railPoint4Sig]);
 railFromPoints(railPoint4, railPoint5, [railPoint4Sig, railPoint5Sig]);
 
-const pointCombos = spacedEvenly(railPoint4, railPoint5, numberOfProjects + 1, [railPoint4Sig, railPoint5Sig]);
+const pointWithSignals = spacedEvenly(railPoint4, railPoint5, numberOfProjects + 1, [railPoint4Sig, railPoint5Sig]);
 
-for (const pointCombo of pointCombos.slice(-numberOfProjects)) {
+for (const pointWithSignal of pointWithSignals.slice(1, numberOfProjects + 1)) {
     const restingStemHeight = 200;
-    let stemHeight = restingStemHeight;
-    const shift = 10;
+    const shift = 60;
     const radius = 15;
-    const p = new Signal();
 
-    const [point, pointSig] = pointCombo;
+    const [point, pointSig] = pointWithSignal;
 
     const interact = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     interact.style.width = radius * 2 + "";
-    interact.style.height = restingStemHeight + radius * 2 + "";
     interact.style.fill = "transparent";
+    const stemHeightSpring = new Spring(restingStemHeight);
+    stemHeightSpring.stiffness = 20;
+    stemHeightSpring.damping = 10;
+    // stemHeightSpring.setStiffnessCritical(200);
+    // stemHeightSpring.damping -= 15;
+
+    const stemHeightSpringSig = new Signal();
 
     effect(() => {
+        const q = stemHeightSpring.value + radius;
+        interact.style.height = q + "";
         interact.setAttribute("x", point.x - radius + "");
-        interact.setAttribute("y", point.y - stemHeight - radius - shift + "");
-    }, [pointSig]);
+        interact.setAttribute("y", point.y - q + "");
+    }, [pointSig, stemHeightSpringSig]);
     globalSVG.appendChild(interact);
 
     interact.onmouseover = () => {
-        stemHeight = restingStemHeight + shift;
-        p.update();
+        stemHeightSpring.target = restingStemHeight + shift;
+        animateSpring(stemHeightSpring, stemHeightSpringSig, 0.01);
     };
     interact.onmouseleave = () => {
-        stemHeight = restingStemHeight;
-        p.update();
+        stemHeightSpring.target = restingStemHeight;
+        animateSpring(stemHeightSpring, stemHeightSpringSig, 0.01);
     };
 
     const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -59,8 +66,8 @@ for (const pointCombo of pointCombos.slice(-numberOfProjects)) {
 
     effect(() => {
         circle.setAttribute("cx", point.x + "");
-        circle.setAttribute("cy", point.y - stemHeight + "");
-    }, [pointSig, p]);
+        circle.setAttribute("cy", point.y - stemHeightSpring.value + "");
+    }, [pointSig, stemHeightSpringSig]);
 
     globalSVG.appendChild(circle);
 
@@ -69,8 +76,8 @@ for (const pointCombo of pointCombos.slice(-numberOfProjects)) {
     stem.style.pointerEvents = "none";
 
     effect(() => {
-        setLinePoints(stem, point.x, point.y, point.x, point.y - stemHeight);
-    }, [pointSig, p]);
+        setLinePoints(stem, point.x, point.y, point.x, point.y - stemHeightSpring.value);
+    }, [pointSig, stemHeightSpringSig]);
 
     globalSVG.appendChild(stem);
 }
