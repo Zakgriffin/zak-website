@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Zak Griffin</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto Mono" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Electrolize" rel="stylesheet" />
+</head>
+
+<body>
+    <script src="index.js" defer></script>
+
+    <svg id="global-svg" overflow="visible"></svg>
+
+    <!-- nav-bar -->
+
+    <div id="nav-background"></div>
+    <h1 id="nav-home" class="nav-bar-item">Home</h1>
+    <h1 id="nav-projects" class="nav-bar-item">Projects</h1>
+    <h1 id="nav-me" class="nav-bar-item">Me</h1>
+    <h1 id="nav-contact" class="nav-bar-item">Contact</h1>
+
+    <!-- landing-title -->
+
+    <div id="landing-name">Zak Griffin</div>
+    <div id="landing-subtitle">
+        I'm a 2nd Year Computer Engineer <br />interested in Software and Hardware.
+    </div>
+
+    <!-- me -->
+
+    <div id="who-am-i">Who am I?</div>
+    <div id="who-am-i-description">I'm a 2nd Year Computer Engineer interested in Software and Hardware. I especially
+        enjoy simple and efficient systems.
+    </div>
+</body>
+
+<style>
+    #global-svg {
+        position: absolute;
+    }
+
+    /* global */
+
+    body {
+        background-color: #111111;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* nav-bar */
+
+    #nav-background {
+        position: fixed;
+        background-color: #111111;
+        z-index: 1;
+    }
+
+    .nav-bar-item {
+        position: fixed;
+        color: #717171;
+        font-family: 'Roboto Mono';
+        font-size: 20px;
+        letter-spacing: 4px;
+        font-weight: normal;
+        z-index: 2;
+    }
+
+    /* landing-title */
+
+    #landing-name {
+        position: absolute;
+        background-image: linear-gradient(45deg, #ff0000, #ff9900);
+        background-clip: text;
+        font-family: 'Electrolize';
+        font-size: 120px;
+        letter-spacing: 15px;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        -moz-text-fill-color: transparent;
+    }
+
+    #landing-subtitle {
+        position: absolute;
+        color: white;
+        font-family: 'Roboto Mono';
+        font-size: 22px;
+    }
+
+    /* me */
+
+    #who-am-i {
+        position: absolute;
+        color: white;
+        font-family: 'Roboto Mono';
+        font-size: 22px;
+    }
+
+    #who-am-i-description {
+        position: absolute;
+        color: #A5A5A5;
+        font-family: 'Roboto Mono';
+        font-size: 12px;
+    }
+</style>
+
+</html>
